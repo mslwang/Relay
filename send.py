@@ -1,12 +1,10 @@
 import requests
 import json
 import os
-from dotenv import load_dotenv
 from twilio.rest import Client
 from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
 from twilio import twiml
 from flask import Flask, request
-load_dotenv()
 
 app = Flask(__name__)
 
@@ -16,7 +14,7 @@ def incoming_sms():
     #Get the message
     body = request.values.get('Body', None);
     resp = MessagingResponse();
-    if(!isValid(body)):
+    if(not isValid(body)):
         resp.message("Invalid Command")
     else:
         resp.message("Your command has been received")
@@ -24,7 +22,7 @@ def incoming_sms():
         #TODO: SEND THE ACTUAL MESSAGE
 
     return str(resp)
-
+        
 
 
 #Check if a message is a valid command
@@ -35,14 +33,19 @@ def isValid(msg):
         return False
     elif allWords[0].lower() != "relay":
         return False
-    elif !isNetwork(allWords[1]):
+    elif not isNetwork(allWords[1]):
         return False
-    else return True
+    else:
+        return True
 
 #If msg is a valid social network
 def isNetwork(msg):
     #Our only valid social network rn
     if msg.lower() == 'messenger':
-        return True;
+        return True
     #We add more social networks here later
-    else return False;
+    else:
+        return False
+    
+    
+    

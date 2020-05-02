@@ -34,7 +34,7 @@ while cmd:
             print("Invalid arguments")
             continue
         name = args[1]
-        message = args[2]
+        message = ''.join(args[2:])
         user = client.searchForUsers(name)[0]
         userId = user.uid
         targetType = ThreadType.USER

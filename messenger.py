@@ -1,9 +1,17 @@
 from fbchat import Client
 from fbchat.models import *
 from datetime import datetime
+
+from twilio.rest import Client as twilClient
+from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
+from twilio import twiml
+
+import twilio_creds as twil_creds
 import getpass
 
 print("Please enter your password:")
+phoneNumber = '+14167069819'
+sms = twilClient(twil_creds.twil_account_id, twil_creds.twil_auth_token)
 
 class RelayBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
@@ -12,7 +20,14 @@ class RelayBot(Client):
         # TODO: store in dict for faster lookup
         user = client.fetchUserInfo(author_id)[author_id]
         time = datetime.fromtimestamp(message_object.timestamp / 1000) # convert time in millis to datetime obj
-        print("[{}] {}: {}".format(str(time), user.name, message_object.text)) 
+        message = "[{}] {}: {}".format(str(time), user.name, message_object.text) 
+        
+        sms.messages.create \
+        (
+            body = message,
+            from_ = twil_creds.twil_number,
+            to = phoneNumber
+        )
 
 client = RelayBot('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 client.listen()

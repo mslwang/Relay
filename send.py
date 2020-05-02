@@ -8,10 +8,26 @@ from flask import Flask, request
 from fbchat import Client
 from fbchat.models import *
 import getpass
-from messenger import RelayBot
+
 
 
 app = Flask(__name__)
+
+class RelayBot(Client):
+    def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
+        self.markAsDelivered(thread_id, message_object.uid)
+        #self.markAsRead(thread_id)
+        # TODO: store in dict for faster lookup
+        user = client.fetchUserInfo(author_id)[author_id]
+        message = "{}: {}".format(user.name, message_object.text) 
+        
+        sms.messages.create \
+        (
+            body = message,
+            from_ = twil_creds.twil_number,
+            to = phoneNumber
+        )
+
 client = RelayBot('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 
 #user is sending something
@@ -39,10 +55,10 @@ def incoming_sms():
         
     elif cmd == "msg" or cmd == 'message':
         recipient = body.split(' ', 2)[1]
-        user = client.searchForUsers(recipient)
-
-        actualMessage = body.split(' ', 3)[2]
+        user = client.searchForUsers(recipient)[0]
         userId = user.uid
+
+        actualMessage = body.split(' ', 2)[2]
         targetType = ThreadType.USER
         
         client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
@@ -52,10 +68,11 @@ def incoming_sms():
     else:
         resp.message("Invalid Command")
 
+    return str(resp)
 
-client.logout()
 
-
+if __name__ == "__main__":
+    app.run(threaded=True, port=5000)
 
         
 
@@ -81,6 +98,5 @@ def isNetwork(msg):
         return False
 '''
 
-if __name__ == "__main__":
-    app.run(threaded=True, port=5000)
+
     

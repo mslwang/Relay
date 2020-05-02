@@ -24,7 +24,7 @@ def incoming_sms():
         #TODO: SEND THE ACTUAL MESSAGE
 
     return str(resp)
-        
+
 
 
 #Check if a message is a valid command
@@ -46,6 +46,3 @@ def isNetwork(msg):
         return True;
     #We add more social networks here later
     else return False;
-    
-    
-    

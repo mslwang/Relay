@@ -9,5 +9,4 @@ app = Flask(__name__)
 @app.route('/send', methods = ['POST'])
 
 
-#User receives messages from social media
-@app.route('/receive', methods = ['POST'])
+

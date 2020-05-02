@@ -15,10 +15,13 @@ sms = twilClient(twil_creds.twil_account_id, twil_creds.twil_auth_token)
 
 class RelayBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
+        
         self.markAsDelivered(thread_id, message_object.uid)
         #self.markAsRead(thread_id)
         # TODO: store in dict for faster lookup
         user = client.fetchUserInfo(author_id)[author_id]
+        
+
         message = "{}: {}".format(user.name, message_object.text) 
         
         sms.messages.create \

@@ -9,7 +9,7 @@ from flask import Flask, request
 app = Flask(__name__)
 
 #user is sending something
-@app.route('/send', methods = ['POST'])
+@app.route('/', methods = ['POST'])
 def incoming_sms():
     #Get the message
     body = request.values.get('Body', None);
@@ -47,5 +47,6 @@ def isNetwork(msg):
     else:
         return False
     
-    
+if __name__ == "__main__":
+    app.run(threaded=True, port=5000)
     

@@ -18,7 +18,7 @@ client = Client('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 @app.route('/', methods = ['POST'])
 def incoming_sms():
     #Get the message
-    body = request.values.get('Body', None).lower()
+    body = request.values.get('Body', None)
     resp = MessagingResponse()
 
     cmds = {
@@ -27,7 +27,7 @@ def incoming_sms():
         "getactivechats": "print a list of active chats"
     }
 
-    cmd = body.split(' ', 2)[0]
+    cmd = body.split(' ', 2)[0].lower()
 
     if cmd == "getactivechats":
         users = client.fetchAllUsers()

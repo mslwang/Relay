@@ -42,8 +42,6 @@ print("Please enter a command. Type help for list of commands")
 prompt = "Enter a command: "
 cmd = str(raw_input(prompt)) 
 
-ids = dict()
-
 while cmd: 
     if cmd == "help":
         print("----- HELP ------")

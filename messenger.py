@@ -19,8 +19,7 @@ class RelayBot(Client):
         #self.markAsRead(thread_id)
         # TODO: store in dict for faster lookup
         user = client.fetchUserInfo(author_id)[author_id]
-        time = datetime.fromtimestamp(message_object.timestamp / 1000) # convert time in millis to datetime obj
-        message = "[{}] {}: {}".format(str(time), user.name, message_object.text) 
+        message = "{}: {}".format(user.name, message_object.text) 
         
         sms.messages.create \
         (

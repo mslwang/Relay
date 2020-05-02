@@ -8,6 +8,8 @@ from twilio import twiml
 
 import twilio_creds as twil_creds
 
+app = Flask(__name__)
+
 #User receives messages from social media
 @app.route('/receive', methods = ['POST'])
 def handler():
@@ -26,3 +28,7 @@ def handler():
         )
 
     print(message.sid)
+
+
+if __name__ == "__main__":
+    app.run(threaded=True, port=5000)

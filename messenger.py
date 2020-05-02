@@ -1,10 +1,21 @@
 from fbchat import Client
 from fbchat.models import *
+from datetime import datetime
 import getpass
 
 print("Please enter your password:")
-client = Client('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 
+class RelayBot(Client):
+    def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
+        self.markAsDelivered(thread_id, message_object.uid)
+        #self.markAsRead(thread_id)
+        # TODO: store in dict for faster lookup
+        user = client.fetchUserInfo(author_id)[author_id]
+        time = datetime.fromtimestamp(message_object.timestamp / 1000) # convert time in millis to datetime obj
+        print("[{}] {}: {}".format(str(time), user.name, message_object.text)) 
+
+client = RelayBot('kelvin.zhang@uwaterloo.ca', getpass.getpass())
+client.listen()
 print("Logged with id: {}".format(client.uid))
 
 cmds = {

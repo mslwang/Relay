@@ -29,7 +29,7 @@ def incoming_sms():
 def isValid(msg):
     #Array of words
     allWords = msg.split(' ')
-    if len(allWords < 3):
+    if len(allWords) < 3:
         return False
     elif allWords[0].lower() != "relay":
         return False

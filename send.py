@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import sys
 from twilio.rest import Client
 from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
 from twilio import twiml
@@ -9,26 +10,9 @@ from fbchat import Client
 from fbchat.models import *
 import getpass
 
-
-
 app = Flask(__name__)
 
-class RelayBot(Client):
-    def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
-        self.markAsDelivered(thread_id, message_object.uid)
-        #self.markAsRead(thread_id)
-        # TODO: store in dict for faster lookup
-        user = client.fetchUserInfo(author_id)[author_id]
-        message = "{}: {}".format(user.name, message_object.text) 
-        
-        sms.messages.create \
-        (
-            body = message,
-            from_ = twil_creds.twil_number,
-            to = phoneNumber
-        )
-
-client = RelayBot('kelvin.zhang@uwaterloo.ca', getpass.getpass())
+client = Client('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 
 #user is sending something
 @app.route('/', methods = ['POST'])
@@ -49,7 +33,7 @@ def incoming_sms():
         users = client.fetchAllUsers()
         returnMessage = ''
         for user in users:
-            returnMessage += "{}: {}".format(user.name, user.uid)
+            returnMessage += "{}: {}\n".format(user.name, user.uid)
 
         resp.message(returnMessage)
         
@@ -71,32 +55,14 @@ def incoming_sms():
     return str(resp)
 
 
+@app.route('/exit', methods = ['GET'])
+def exit():
+    client.logout()
+
 if __name__ == "__main__":
     app.run(threaded=True, port=5000)
 
         
-
-'''
-#Check if a message is a valid command
-def isValid(msg):
-    #Array of words
-    allWords = msg.split(' ')
-    if len(allWords) < 2:
-        return False
-    elif not isNetwork(allWords[1]):
-        return False
-    else:
-        return True
-
-#If msg is a valid social network
-def isNetwork(msg):
-    #Our only valid social network rn
-    if msg.lower() == 'messenger':
-        return True
-    #We add more social networks here later
-    else:
-        return False
-'''
 
 
     

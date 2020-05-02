@@ -21,47 +21,36 @@ def incoming_sms():
     body = request.values.get('Body', None).lower()
     resp = MessagingResponse()
 
-    if(not isValid(body)):
-        resp.message("Invalid Command")
-    else:
-        resp.message("Your command has been received")
-        actualMessage = body.split(' ', 2)[2]
-        recipient = 'Allen Lu'
-        cmd = body.split(' ', 2)[1]
+    cmds = {
+        "getfriends": "",
+        "msg {name} {msg}": "send message to friend",
+        "getactivechats": "print a list of active chats"
+    }
 
-        cmds = {
-            "getfriends": "",
-            "msg {name} {msg}": "send message to friend",
-            "getactivechats": "print a list of active chats"
-        }
+    cmd = body.split(' ', 2)[0]
 
-        if cmd == "help":
-            returnMessage = "----- HELP ------\n"
-            for key, val in cmds.items():
-                returnMessage += "{}: {}\n".format(key, val)
-            returnMessage += "-----------------\n"
+    if cmd == "getactivechats":
+        users = client.fetchAllUsers()
+        returnMessage = ''
+        for user in users:
+            returnMessage += "{}: {}".format(user.name, user.uid)
 
-            resp.message(returnMessage)
-
-        elif cmd == "getactivechats":
-            users = client.fetchAllUsers()
-            returnMessage = ''
-            for user in users:
-                returnMessage += "{}: {}".format(user.name, user.uid)
-
-            resp.message(returnMessage)
-            
-        elif cmd == "msg" or cmd == 'message':
-            user = client.searchForUsers(recipient)
-            userId = user.uid
-            targetType = ThreadType.USER
-            
-            client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
-
-            resp.message("Message Sent")
+        resp.message(returnMessage)
         
-        else:
-            resp.message("Command Not Found")
+    elif cmd == "msg" or cmd == 'message':
+        recipient = body.split(' ', 2)[1]
+        user = client.searchForUsers(recipient)
+
+        actualMessage = body.split(' ', 3)[2]
+        userId = user.uid
+        targetType = ThreadType.USER
+        
+        client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
+
+        resp.message("Message Sent")
+    
+    else:
+        resp.message("Invalid Command")
 
 
 client.logout()
@@ -70,14 +59,12 @@ client.logout()
 
         
 
-
+'''
 #Check if a message is a valid command
 def isValid(msg):
     #Array of words
     allWords = msg.split(' ')
-    if len(allWords) < 3:
-        return False
-    elif allWords[0].lower() != "relay":
+    if len(allWords) < 2:
         return False
     elif not isNetwork(allWords[1]):
         return False
@@ -92,7 +79,8 @@ def isNetwork(msg):
     #We add more social networks here later
     else:
         return False
-    
+'''
+
 if __name__ == "__main__":
     app.run(threaded=True, port=5000)
     

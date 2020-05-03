@@ -7,3 +7,10 @@
 
 
 * Don't forget to install python-twitter instead of twitter for the flask dependencies
+
+# Functionality
+
+## Front-End Website: Register Social Meda Integrations
+Visit Relayme.online to connect your social media accounts to your phone via SMS
+
+##

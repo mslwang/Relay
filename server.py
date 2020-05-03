@@ -74,7 +74,7 @@ def incoming_sms():
         #get user credentials
         valid_accounts = sch.User.objects.get({'_id': "{}".format(from_)}).accounts
 
-        if mode in valid_accounts:
+        if mode in valid_accounts.integration:
             if mode == 'messenger':
                 #client.logout()
                 login = valid_accounts[mode]
@@ -112,7 +112,7 @@ def incoming_sms():
         if mode == 'twitter':
             valid_accounts = sch.User.objects.get({'_id': "{}".format(from_)}).accounts
             
-            if mode in valid_accounts:
+            if mode in valid_accounts.integration:
                 consumer_key = ''
                 consumer_secret = ''
                 access_token_key = ''

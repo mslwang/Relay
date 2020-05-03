@@ -21,7 +21,7 @@ api = twitter.Api(
 #CODE TO POST A TWEET
 api.PostUpdate(message)
 
-#CODE TO SEE NEW TWEETS
+#CODE TO SEND DM
 api.PostDirectMessage(message, screen_name=twitter_handle)
 
 #CODE TO SEE 5 DIRECT MESSAGES. Can be modified to make it since x message or y total messages

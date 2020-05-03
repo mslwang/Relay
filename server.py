@@ -102,21 +102,6 @@ def incoming_sms():
             resp.message("Message Sent")
 
     elif cmd == 'tweet':
-<<<<<<< HEAD
-        if mode == 'twitter':
-            api = twitter.Api(
-                consumer_key=consumer_key,
-                consumer_secret=consumer_secret,
-                access_token_key=access_token_key,
-                access_token_secret=access_token_secret)
-
-            message = body.split(' ', 1)[1]
-            api.PostUpdate(message)
-            resp.message("Tweet Sent")
-
-        else:
-            resp.message('{} does not exist for {}'.format(cmd, mode))
-=======
         user = sch.User.objects.get({'_id': "{}".format(from_)})
         login = user.twitter_login
         api = twitter.Api(
@@ -128,7 +113,6 @@ def incoming_sms():
         message = body.split(' ', 1)[1]
         api.PostUpdate(message)
         resp.message("Tweet Sent")
->>>>>>> 15ee859fdd06c8af4c483d3174735a82b8969060
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
     elif cmd == "switch":
@@ -147,7 +131,7 @@ def do_signup():
     if(integration === "messenger"):
         email = data['email']
         password = data['password']
-        sch.User(tel, email=data['email'], active="twitter", messenger_login=sch.MessengerAccount(email=email, password=password))
+        sch.User(tel, email=data['email'], active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))
     elif(integration === "twitter"):
         access_token = data['access_token']
         access_token_secret = data['access_token_secret']

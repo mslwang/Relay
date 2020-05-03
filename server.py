@@ -64,7 +64,8 @@ def incoming_sms():
 
         if mode in modes:
             resp.message("Mode switched to {}".format(mode))
-
+            sch.User.objects.raw({'_id': from_}).update({"$set": {"active": mode}}
+        
         else:
             resp.message("Invalid mode type")
 
@@ -127,11 +128,11 @@ def incoming_sms():
 def do_signup():
     data = json.loads(request.data)
     integration = data['integration']
-    tel = data['tel']
+    tel = "+1" + data['tel']
     if(integration === "messenger"):
         email = data['email']
         password = data['password']
-        sch.User(tel, email=data['email'], active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))
+        sch.User(tel, email=data['email'], active="twitter", messenger_login=sch.MessengerAccount(email=email, password=password))
     elif(integration === "twitter"):
         access_token = data['access_token']
         access_token_secret = data['access_token_secret']

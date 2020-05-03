@@ -143,6 +143,7 @@ class App extends React.Component {
 	renderMessengerForm = () => {
 		return (
 			<div className="messengerForm">
+				<input type="tel" placeholder="Phone Number" onChange={(e) => this.updateTel(e.target.value)}/>
 				<input type="email" placeholder="Email" onChange={(e) => this.updateEmail(e.target.value)}/>
 				<input type="password" placeholder="Password" onChange={(e) => this.updatePassword(e.target.value)}/>
 			</div>
@@ -152,6 +153,7 @@ class App extends React.Component {
 	renderTwitterForm = () => {
 		return (
 			<div className="twitterForm">
+				<input type="tel" placeholder="Phone Number" onChange={(e) => this.updateTel(e.target.value)}/>
 				<input type="text" placeholder="Access Token" onChange={(e) => this.updateAccessToken(e.target.value)}/>
 				<input type="text" placeholder="Access Token Secret" onChange={(e) => this.updateAccessTokenSecret(e.target.value)}/>
 				<input type="text" placeholder="API Key" onChange={(e) => this.updateAPIKey(e.target.value)}/>
@@ -175,7 +177,6 @@ class App extends React.Component {
 						  <div className={`social messenger ${this.state.integration == "messenger" ? 'selected' : ''}`} onClick={(e) => this.setIntegration("messenger")}><i className="fab fa-facebook-messenger"></i></div>
 						  <div className={`social twitter ${this.state.integration == "twitter" ? 'selected' : ''}`} onClick={(e) => this.setIntegration("twitter")}><i className="fab fa-twitter"></i></div>
 					  </div>
-					  <input type="tel" placeholder="Phone Number" onChange={(e) => this.updateTel(e.target.value)}/>
 					  { (this.state.integration && this.state.integration == "twitter") ?
 						  this.renderTwitterForm() :
 						  this.renderMessengerForm()

@@ -1,9 +1,25 @@
 from pymongo import MongoClient
 from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
-import os
-from dotenv import load_dotenv
+import credentials  
 
-class Twitter(EmbeddedMongoModel):
+class User(MongoModel):
+    """
+    Schema for a user
+    Properties:
+    phone_number -- note: will represent unique id
+            type: String
+             
+    email -- email
+             type: Email
+    accounts -- List of accounts
+                type: List(Account)
+    """
+    phone_number = fields.CharField(primary_key=True, required=True)
+    active = fields.CharField(require=True)
+    twitter_login = fields.EmbeddedDocumentField(TwitterAccount)
+    messenger_login = fields.EmbeddedDocumentField(MessengerAccount)
+
+class TwitterAccount(MongoModel):
     """
     Schema for a twitter user
 
@@ -28,10 +44,9 @@ class Twitter(EmbeddedMongoModel):
     access_token_secret = fields.CharField(required=True)
     api_key = fields.CharField(required=True)
     api_secret_key = fields.CharField(required=True)
+    last_msg = fields.BigIntegerField(required=True)
 
-    
-
-class Messenger(EmbeddedMongoModel):
+class MessengerAccount(MongoModel):
     """
     Schema for a messenger user
 
@@ -49,16 +64,9 @@ class Messenger(EmbeddedMongoModel):
     email = fields.EmailField(required=True)
     password = fields.CharField(required=True)
 
-class User(MongoModel):
-    phone_number = fields.CharField(primary_key=True, required=True)
-    twitter = fields.EmbeddedDocumentField('Twitter')
-    messenger = fields.EmbeddedDocumentField('Messenger')
-    accounts_available = fields.ListField(default=[])
-    active = fields.CharField(default='null', choices=['twitter', 'messenger', 'null'])
-
 def initial():
     load_dotenv()
-    connect(os.getenv("CONNECT"))
-    client = MongoClient(os.getenv("CONNECT"))
+    connect(credentials.dbUrl)
+    client = MongoClient(credentials.dbUrl)
     return client.Relay
 

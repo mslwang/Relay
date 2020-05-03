@@ -74,7 +74,7 @@ def incoming_sms():
         mode = user.active
 
         if mode == 'messenger':
-            login = user[fb_login]
+            login = user.messenger_login
             client = Client(login.email, login.password)
             recipient = body.split(' ', 2)[1]
             user = client.searchForUsers(recipient)[0]
@@ -86,11 +86,12 @@ def incoming_sms():
             resp.message("Message Sent")
 
         elif mode == 'twitter':
+            login = user.twitter_login
             api = twitter.Api(
-                consumer_key=consumer_key,
-                consumer_secret=consumer_secret,
-                access_token_key=access_token_key,
-                access_token_secret=access_token_secret)
+                consumer_key=login.consumer_key,
+                consumer_secret=login.consumer_secret,
+                access_token_key=login.access_token_key,
+                access_token_secret=login.access_token_secret)
 
             screenName = body.split(' ',2)[1]
             user = api.GetUser(screen_name = screenName)
@@ -101,23 +102,17 @@ def incoming_sms():
             resp.message("Message Sent")
 
     elif cmd == 'tweet':
-        if mode == 'twitter':
-            api = twitter.Api(
-                consumer_key=consumer_key,
-                consumer_secret=consumer_secret,
-                access_token_key=access_token_key,
-                access_token_secret=access_token_secret)
+        user = sch.User.objects.get({'_id': "{}".format(from_)})
+        login = user.twitter_login
+        api = twitter.Api(
+            consumer_key=login.consumer_key,
+            consumer_secret=login.consumer_secret,
+            access_token_key=login.access_token_key,
+            access_token_secret=login.access_token_secret)
 
-            message = body.split(' ', 1)[1]
-            api.PostUpdate(message)
-            resp.message("Tweet Sent")
-
-        else:
-            resp.message('{} does not exist for {}'.format(cmd, mode))
-<<<<<<< HEAD
-        
-=======
->>>>>>> cfbe823a4d025a9610dccd6a95e781b0d05ad066
+        message = body.split(' ', 1)[1]
+        api.PostUpdate(message)
+        resp.message("Tweet Sent")
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
 
@@ -129,15 +124,21 @@ def incoming_sms():
 
 @app.route('/signup', methods = ['POST'])
 def do_signup():
-
     data = json.loads(request.data)
     integration = data['integration']
-    if(integration == "messenger"):
-        sch.Messenger(data['tel'], email=data['email'], password=data['password'], active=False).save(force_insert=True)
-        print("{}, {}, {}, {}".format(integration, tel, email, password))
-    elif(integration == "twitter"):
-        sch.Messenger(data['tel'], access_token=data['access_token'], access_token_secret=data['access_token_secret'], api_key=data['api_key'], api_secret_key=data['api_secret_key']).save(force_insert=True)
+    tel = data['tel']
+    if(integration === "messenger"):
+        email = data['email']
+        password = data['password']
+        sch.User(tel, email=data['email'], active="twitter", messenger_login=sch.MessengerAccount(email=email, password=password))
+    elif(integration === "twitter"):
+        access_token = data['access_token']
+        access_token_secret = data['access_token_secret']
+        api_key = data['api_key']
+        api_secret_key = data['api_secret_key']
+        sch.User(tel, email=data['email'], active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key))
 
+    print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})
 
 @app.route('/exit', methods = ['GET'])

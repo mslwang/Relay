@@ -15,7 +15,7 @@ class App extends React.Component {
 			email: '',
 			password: '',
 			access_token: '',
-			access_token_secret: '',
+			access_secret_token: '',
 			api_key: '',
 			api_secret_key: '',
 			message: '',
@@ -33,7 +33,7 @@ class App extends React.Component {
 				active: this.state.integration,
 				tel: this.state.tel,
 				access_token: this.state.access_token,
-				access_token_secret: this.state.access_token_secret,
+				access_secret_token: this.state.access_token_secret,
 				api_key: this.state.api_key,
 				api_secret_key: this.state.api_secret_key
 			}
@@ -93,7 +93,7 @@ class App extends React.Component {
 					email: '',
 					password: '',
 					access_token: '',
-					access_token_secret: '',
+					access_secret_token: '',
 					api_key: '',
 					api_secret_key: '',
 					message: 'Integration successfully added.',

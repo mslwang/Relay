@@ -6,7 +6,7 @@ from twilio.rest import Client as twilClient
 from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
 from twilio import twiml
 
-import credientials
+import credentials
 import getpass
 
 sms = twilClient(credentials.twil_account_id, credentials.twil_auth_token)

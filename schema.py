@@ -63,9 +63,3 @@ class User(MongoModel):
     active = fields.CharField(required=True)
     twitter_login = fields.EmbeddedDocumentField('TwitterAccount')
     messenger_login = fields.EmbeddedDocumentField('MessengerAccount')
-
-def initial():
-    connect(credentials.dbUrl)
-    client = MongoClient(credentials.dbUrl)
-    return client.Relay
-

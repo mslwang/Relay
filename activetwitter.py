@@ -60,7 +60,7 @@ for user in active_users:
             name = user.name
 
             message = client.messages.create(
-                body=actualContent,
+                body=actualContent + " was sent from " + name,
                 from_ = credentials.twil_number,
                 to = recipient
             )

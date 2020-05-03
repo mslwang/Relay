@@ -25,10 +25,9 @@ for user in active_users:
     consumer_secret = credentials.consumer_secret #user.api_secret_key
     access_token_key = credentials.access_token_key #user.access_token
     access_token_secret = credentials.access_token_secret #user.access_secret_key
-    lastmsgid = client['twitter_login']['last_msg']
+    lastmsgid = user['twitter_login']['last_msg']
 
     print(lastmsgid)
-    print(newmsgid)
 
     api = twitter.Api(
         consumer_key=consumer_key,
@@ -41,15 +40,17 @@ for user in active_users:
     twilioClient = twilClient(account_sid, auth_token)
 
     newmsgid = api.GetDirectMessages(return_json=True, count = 1)['events'][0]['id']
+    print(newmsgid)
 
     if(newmsgid != lastmsgid):
         #TODO SEND SMS WITH:
         #This is a JSON with all the messages since the lastmsg
         newMessages = api.GetDirectMessages(return_json=True, since_id = lastmsgid)
 
-        recipient = client.find({"consumer_key":'{}'.format(consumer_key)})
-        currentPhoneNum = recipient._id
-
+        
+        recipient = user['_id']
+        print(recipient)
+        
         for msg in newMessages['events']:
             #Message body
             actualContent = msg['message_create']['message_data']['text']

@@ -16,14 +16,18 @@ from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import os
 from dotenv import load_dotenv
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../build', static_url_path='/')
 CORS(app)
 mongoClient = MongoClient('localhost', 27017)
 
 client = Client('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
 #user is sending something
-@app.route('/', methods = ['POST'])
+@app.route('/sms', methods = ['POST'])
 def incoming_sms():
     #Get the message
     body = request.values.get('Body', None)

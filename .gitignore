@@ -18,3 +18,5 @@ build/
 .sudo_as_admin_successful
 .viminfo
 .gitconfig
+.config
+.npm

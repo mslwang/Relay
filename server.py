@@ -3,6 +3,7 @@ from flask import Flask, request
 import time
 import json
 from flask_cors import CORS
+import schema as sch
 
 app = Flask(__name__)
 CORS(app)
@@ -19,8 +20,10 @@ def do_signup():
     password = data['password']
 
     # store this in mongo
+    sch.User(tel, email=email, accounts=[sch.Account(integration=integration, username=email, utype="email", password=password)]).save()
     print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})
 
 if __name__ == "__main__":
+    sch.initial()
     app.run(threaded=True, port=5000)

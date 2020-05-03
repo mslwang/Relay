@@ -101,17 +101,17 @@ def incoming_sms():
                     access_token_secret=access_token_secret)
 
                 screenName = body.split(' ',2)[1]
-                user = api.getUser(screen_name = screenName)
+                user = api.GetUser(screen_name = screenName)
                 twitterid = user.id
                 message = body.split(' ', 2)[2]
 
                 api.PostDirectMessage(message, user_id = twitterid)
                 resp.message("Message Sent")
-    
+
     elif cmd == 'tweet':
         if mode == 'twitter':
             valid_accounts = sch.User.objects.get({'_id': "{}".format(from_)}).accounts
-            
+
             if mode in valid_accounts.integration:
                 consumer_key = ''
                 consumer_secret = ''
@@ -128,10 +128,10 @@ def incoming_sms():
 
                 api.PostUpdate(message)
                 resp.message("Tweet Sent")
-        
+
         else:
             resp.message('{} does not exist for {}'.format(cmd, mode))
-        
+
     elif cmd == "currentmode"
         resp.message("Currently set on {}".format(mode))
 

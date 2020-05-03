@@ -10,3 +10,13 @@ twilio_creds.py
 build/
 node_modules
 build/
+.bash_logout
+.bashrc
+.cloud-locale-test.skip
+.profile
+.ssh/
+.sudo_as_admin_successful
+.viminfo
+.gitconfig
+.config
+.npm

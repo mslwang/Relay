@@ -18,12 +18,9 @@ from dotenv import load_dotenv
 import schema as sch
 import twitter
 
-
 app = Flask(__name__, static_folder='build')
 CORS(app)
 mongoClient = MongoClient('localhost', 27017)
-
-client = Client('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 
 @app.route('/')
 def index():

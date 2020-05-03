@@ -21,8 +21,52 @@ import schema as sch
 import twitter
 
 app = Flask(__name__, static_folder='build')
+messenger_instances = dict()
+twitter_instances = dict()
+
 connect(credentials.dbUrl)
 CORS(app)
+
+def newMessengerInstance(phoneNum, email, password):
+    client = RelayBot(phoneNum, email, password)
+    log.info("adding {}, {}, {}".format(phoneNum, email, password))
+    client.listen()
+    messenger_instances[phoneNum] = client
+    if not client.isLoggedIn():
+        raise Exception
+
+def newTwitterInstance(phoneNum, key, secret, access_key, access_secret):
+    log.info("adding {}, {}, {}, {}, {}".format(phoneNum, key, secret, access_key, access_secret))
+    client = twitter.Api(
+            consumer_key=key,
+            consumer_secret=secret,
+            access_token_key=access_key,
+            access_token_secret_login=access_secret)
+    twitter_instances[phoneNum] = client
+    if not client.VerifyCredentials():
+        raise Exception
+
+# when we start, populate instances
+users = list(sch.User.objects.all())
+for user in users:
+    active = user.active
+    if active == "messenger":
+        login = user.messenger_login
+        phoneNum = user.phone_number 
+        try:
+            newMessengerInstance(phoneNum, login.email, login.password)
+        except Exception:
+            pass
+    elif active == "twitter":
+        login = user.twitter_login
+        try:
+            newTwitterInstance(
+                consumer_key=login.consumer_key,
+                consumer_secret=login.consumer_secret,
+                access_token_key=login.access_token_key,
+                access_token_secret=login.access_token_secret)
+        except Exception:
+            pass
 
 @app.route('/')
 def index():
@@ -79,8 +123,19 @@ def incoming_sms():
         mode = user.active
 
         if mode == 'messenger':
-            login = user.messenger_login
-            client = RelayBot(login.email, login.password)
+            client = None
+            if from_ in messenger_instances:
+                client = messenger_instances[from_]
+            else:
+                login = user.messenger_login
+                client = RelayBot(user.phone_number, login.email, login.password)
+                client.listen()
+                messenger_instances[phoneNum] = client
+            
+            if not client or not client.isLoggedIn():
+                resp.message("Failed to log in, please update credentials")
+                return str(resp)
+
             recipient = body.split(' ', 2)[1]
             user = client.searchForUsers(recipient)[0]
             userId = user.uid
@@ -138,17 +193,26 @@ def do_signup():
         email = data['email']
         password = data['password']
         sch.User(tel, active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password)).save()
+        try:
+            newMessengerInstance(tel, email, password)
+        except Exception:
+            log.info("whoops")
+            pass
     elif integration == "twitter":
         print(data)
         access_token = data['access_token']
         access_secret_token = data['access_secret_token']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
-        api = twitter.Api(
-            consumer_key=api_key,
-            consumer_secret=api_secret_key,
-            access_token_key=access_token,
-            access_token_secret=access_token_secret)
+        try:
+            newTwitterInstance(
+                consumer_key=api_key,
+                consumer_secret=api_secret_key,
+                access_token_key=access_token,
+                access_token_secret=access_token_secret)
+        except Exception:
+            log.info("whoops")
+            pass
         lastmsgid = api.GetDirectMessages(return_json=True, count = 1).events[0].id
         sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key, last_msg = lastmsgid)).save()
 

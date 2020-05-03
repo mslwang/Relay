@@ -44,7 +44,7 @@ class TwitterAccount(MongoModel):
     access_token_secret = fields.CharField(required=True)
     api_key = fields.CharField(required=True)
     api_secret_key = fields.CharField(required=True)
-    last_msg = fields.BigIntegerField(required=True)
+    last_msg = fields.BigIntegerField(required=False)
 
 class MessengerAccount(MongoModel):
     """

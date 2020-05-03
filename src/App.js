@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.png';
 import './App.css';
+import { errorMessages } from './constants'
 
 class App extends React.Component {
 	
@@ -23,27 +24,54 @@ class App extends React.Component {
 	}
 
 	submitClicked = (event) => {
-
 		event.preventDefault();
-		const requestBody = {
-			integration: this.state.integration,
-			tel: this.state.tel,
-			email: this.state.email,
-			password: this.state.password
+		let requestBody;
+
+		if(this.state.integration == "twitter") {
+			requestBody = {
+				integration: this.state.integration,
+				active: this.state.integration,
+				tel: this.state.tel,
+				access_token: this.state.access_token,
+				access_token_secret: this.state.access_token_secret,
+				api_key: this.state.api_key,
+				api_secret_key: this.state.api_secret_key
+			}
+		} else {
+			requestBody = {
+				integration: this.state.integration,
+				active: this.state.integration,
+				tel: this.state.tel,
+				email: this.state.email,
+				password: this.state.password
+			}
 		}
-		console.log(requestBody);
-		
+			
 		const checkFilled = new Promise((resolve, reject) => {
-			if(requestBody.integration !== "messenger" && requestBody.integration !== "twitter" && requestBody.integration !== "instagram"){
-				reject(1);
+			if(requestBody.integration !== "messenger" && requestBody.integration !== "twitter"){
+				reject('MISSING_INTEGRATION');
 			} else if(requestBody.tel === ""){
-				reject(2);
-			} else if (requestBody.email === ""){
-				reject(3);
-			} else if(requestBody.password === ""){
-				reject(4);
-			} else{
-				resolve();
+				reject('MISSING_PHONE');
+			} else if (requestBody.integration == "messenger") {
+				if (requestBody.email === ""){
+					reject('MISSING_EMAIL');
+				} else if(requestBody.password === ""){
+					reject('MISSING_PASSWORD');
+				} else {
+					resolve();
+				}
+			} else if (requestBody.integration == "twitter") {
+				if (requestBody.access_token === ""){
+					reject('MISSING_ACCESS_TOKEN');
+				} else if (requestBody.access_token_secret === ""){
+					reject('MISSING_ACCESS_TOKEN_SECRET');
+				} else if (requestBody.api_key === "") {
+					reject('MISSING_API_KEY');
+				} else if (requestBody.api_secret_key === "") {
+					reject('MISSING_API_KEY_SECRET');
+				} else {
+					resolve();
+				}
 			}
 		})
 		.then(fetch(`${this.flaskEndpoint}/signup`, {
@@ -73,27 +101,10 @@ class App extends React.Component {
 			})
 		  }).catch((err) => {
 			this.setState({warning: true});
-			const response = err.response;
-			if (response) {
-				this.handleError(response.data.message);
-			}
-			else {
-				this.handleError('An error occurred. Please try again later.');
-			}
 		  }),
 		  (val) => {
-			  this.setState({warning: true});
-			  switch(val){
-				  case 1: this.setState({message: "Select integration."});
-							break;
-				  case 2: this.setState({message: "Fill in phone number."});
-							  break;
-				  case 3: this.setState({message: "Fill in email."});
-							  break;
-				  case 4: this.setState({message: "Fill in password."});
-							  break;
-				
-			  }
+			  console.log(val)
+			  this.handleError(errorMessages[val])
 		  });
 	}	
 
@@ -102,19 +113,56 @@ class App extends React.Component {
 	}
 
 	setIntegration = (integration) => {
-		this.setState({ integration: integration, message: '', warning: false})
+		this.setState({ integration: integration, message: '', warning: false })
 	}
 
 	updateTel = (tel) => {
-		this.setState({ tel: tel, message: '', warning: false})
+		this.setState({ tel: tel, message: '', warning: false })
 	}
 
 	updateEmail = (email) => {
-		this.setState({ email: email, message: '', warning: false});
+		this.setState({ email: email, message: '', warning: false });
 	}
 
 	updatePassword = (password) => {
-		this.setState({ password: password, message: '', warning: false})
+		this.setState({ password: password, message: '', warning: false })
+	}
+
+	updateAccessToken = (accessToken) => {
+		this.setState({ access_token: accessToken, message: '', warning: false })
+	}
+
+	updateAccessTokenSecret = (accessTokenSecret) => {
+		this.setState({ access_token_secret: accessTokenSecret, message: '', warning: false })
+	}
+
+	updateAPIKey = (accessAPIKey) => {
+		this.setState({ access_api_key: accessAPIKey, message: '', warning: false })
+	}
+
+	updateAPIKeySecret = (accessAPIKeySecret) => {
+		this.setState({ access_api_key_secret: accessAPIKeySecret, message: '', warning: false })
+	}
+
+	renderMessengerForm = () => {
+		return (
+			<div className="messengerForm">
+				<input type="tel" placeholder="Phone Number" onChange={(e) => this.updateTel(e.target.value)}/>
+				<input type="email" placeholder="Email" onChange={(e) => this.updateEmail(e.target.value)}/>
+				<input type="password" placeholder="Password" onChange={(e) => this.updatePassword(e.target.value)}/>
+			</div>
+		)
+	}
+
+	renderTwitterForm = () => {
+		return (
+			<div className="twitterForm">
+				<input type="text" placeholder="Access Token" onChange={(e) => this.updateAccessToken(e.target.value)}/>
+				<input type="text" placeholder="Access Token Secret" onChange={(e) => this.updateAccessTokenSecret(e.target.value)}/>
+				<input type="text" placeholder="API Key" onChange={(e) => this.updateAPIKey(e.target.value)}/>
+				<input type="text" placeholder="API Secret Key" onChange={(e) => this.updateAPIKeySecret(e.target.value)}/>
+			</div>
+		)
 	}
 
 	render = () => {
@@ -132,9 +180,10 @@ class App extends React.Component {
 						  <div className={`social messenger ${this.state.integration == "messenger" ? 'selected' : ''}`} onClick={(e) => this.setIntegration("messenger")}><i className="fab fa-facebook-messenger"></i></div>
 						  <div className={`social twitter ${this.state.integration == "twitter" ? 'selected' : ''}`} onClick={(e) => this.setIntegration("twitter")}><i className="fab fa-twitter"></i></div>
 					  </div>
-					  <input type="tel" placeholder="Phone Number" onChange={(e) => this.updateTel(e.target.value)}/>
-					  <input type="email" placeholder="Email" onChange={(e) => this.updateEmail(e.target.value)}/>
-					  <input type="password" placeholder="Password" onChange={(e) => this.updatePassword(e.target.value)}/>
+					  { (this.state.integration && this.state.integration == "twitter") ?
+						  this.renderTwitterForm() :
+						  this.renderMessengerForm()
+					  }
 					  <button onClick={this.submitClicked}>Add Integration</button>
 				  </div>
 				</div>

@@ -68,6 +68,7 @@ class App extends React.Component {
 			  }
 			})
 		  }).catch((err) => {
+			this.setState({warning: true});
 			const response = err.response;
 			if (response) {
 				this.handleError(response.data.message);
@@ -125,7 +126,6 @@ class App extends React.Component {
 					  <h1>Add an Integration</h1>
 					  <div className="social-container">
 						  <div className={`social messenger ${this.state.integration == "messenger" ? 'selected' : ''}`} onClick={(e) => this.setIntegration("messenger")}><i className="fab fa-facebook-messenger"></i></div>
-						  <div className={`social instagram ${this.state.integration == "instagram" ? 'selected' : ''}`} onClick={(e) => this.setIntegration("instagram")}><i className="fab fa-instagram"></i></div>
 						  <div className={`social twitter ${this.state.integration == "twitter" ? 'selected' : ''}`} onClick={(e) => this.setIntegration("twitter")}><i className="fab fa-twitter"></i></div>
 					  </div>
 					  <input type="tel" placeholder="Phone Number" onChange={(e) => this.updateTel(e.target.value)}/>

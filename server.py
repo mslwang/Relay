@@ -15,13 +15,16 @@ CORS(app)
 def do_signup():
     data = json.loads(request.data)
     integration = data['integration']
-    tel = data['tel']
-    email = data['email']
-    password = data['password']
+    if(integration === "messenger"):
+        tel = data['tel']
+        email = data['email']
+        password = data['password']
+        sch.Messenger(data['tel'], email=data['email'], password=data['password'], active=False).save(force_insert=True)
+        print("{}, {}, {}, {}".format(integration, tel, email, password))
+    elif(integration === "twitter"):
+        
 
-    # store this in mongo
-    sch.User(tel, email=email, accounts=[sch.Account(integration=integration, username=email, utype="email", password=password)]).save()
-    print("{}, {}, {}, {}".format(integration, tel, email, password))
+    
     return json.dumps({"status": 200})
 
 if __name__ == "__main__":

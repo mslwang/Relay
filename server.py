@@ -181,8 +181,13 @@ def incoming_sms():
         message = body.split(' ', 1)[1]
         api.PostUpdate(message)
         resp.message("Tweet Sent")
+
     elif cmd == "currentmode":
+        user = sch.User.objects.get({'_id': from_})
+        mode = user.active
+        
         resp.message("Currently set on {}".format(mode))
+
     else:
         resp.message("Invalid Command")
 

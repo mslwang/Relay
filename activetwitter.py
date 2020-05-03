@@ -45,7 +45,7 @@ for user in active_users:
     if(newmsgid != lastmsgid):
         #TODO SEND SMS WITH:
         #This is a JSON with all the messages since the lastmsg
-        newMessages = api.GetDirectMessages(return_json=True, since_id = lastmsgid)
+        newMessages = api.GetDirectMessages(return_json=True, since_id=lastmsgid)
 
         recipient = user['_id']
         print(recipient)

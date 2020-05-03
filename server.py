@@ -19,6 +19,7 @@ from relaybot import RelayBot
 import os
 import schema as sch
 import twitter
+import threading
 
 app = Flask(__name__, static_folder='build')
 messenger_instances = dict()
@@ -27,10 +28,15 @@ twitter_instances = dict()
 connect(credentials.dbUrl)
 CORS(app)
 
+def listen(client):
+    log.info("spawning new thread")
+    client.listen()
+
 def newMessengerInstance(phoneNum, email, password):
     client = RelayBot(phoneNum, email, password)
     log.info("adding {}, {}, {}".format(phoneNum, email, password))
-    client.listen()
+    th = threading.Thread(target=listen, args=(client,))
+    th.start()
     messenger_instances[phoneNum] = client
     if not client.isLoggedIn():
         raise Exception

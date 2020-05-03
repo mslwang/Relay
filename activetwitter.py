@@ -47,10 +47,11 @@ for user in active_users:
         #This is a JSON with all the messages since the lastmsg
         newMessages = api.GetDirectMessages(return_json=True, since_id = lastmsgid)
 
-        
         recipient = user['_id']
         print(recipient)
-        
+
+        sch.User.objects.raw({'_id': '{}'.format(recipient)}).update({"$set": {"twitter_login.last_msg": '{}'.format(newmsgid)}})
+
         for msg in newMessages['events']:
             #Message body
             actualContent = msg['message_create']['message_data']['text']

@@ -1,7 +1,5 @@
 # Relay: Keeping you Connected
 
-# TOHacks Demo
-https://youtu.be/h5aHxvQXArc
 
 # For Developers
 * Run `npm install` to install Node dependencies

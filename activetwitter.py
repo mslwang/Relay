@@ -14,21 +14,21 @@ connect(credentials.dbUrl)
 client = MongoClient(credentials.dbUrl).Relay.user
 
 
-
 #infinite loop baby
 #while True:
 active_users = client.find({"active":'twitter'})
 print(active_users)
 
 for user in active_users:
-        # User API keys (fetched from database)
-    consumer_key = credentials.consumer_key
-    consumer_secret = credentials.consumer_secret
-    access_token_key = credentials.access_token_key
-    access_token_secret = credentials.access_token_secret
+    # User API keys (fetched from database)
+    consumer_key = credentials.consumer_key #user.api_key
+    consumer_secret = credentials.consumer_secret #user.api_secret_key
+    access_token_key = credentials.access_token_key #user.access_token
+    access_token_secret = credentials.access_token_secret #user.access_secret_key
     lastmsgid = client['twitter_login']['last_msg']
 
     print(lastmsgid)
+    print(newmsgid)
 
     api = twitter.Api(
         consumer_key=consumer_key,
@@ -36,11 +36,11 @@ for user in active_users:
         access_token_key=access_token_key,
         access_token_secret=access_token_secret)
 
-    newmsgid = api.GetDirectMessages(return_json=True, count = 1)['events'][0]['id']
-
     account_sid = credentials.twil_account_id
     auth_token = credentials.twil_auth_token
-    twiloClient = twilClient(account_sid, auth_token)
+    twilioClient = twilClient(account_sid, auth_token)
+
+    newmsgid = api.GetDirectMessages(return_json=True, count = 1)['events'][0]['id']
 
     if(newmsgid != lastmsgid):
         #TODO SEND SMS WITH:
@@ -49,8 +49,6 @@ for user in active_users:
 
         recipient = client.find({"consumer_key":'{}'.format(consumer_key)})
         currentPhoneNum = recipient._id
-        #THIS DOESN'T WORK. Need to get id of the current user
-        sch.User.objects.raw({'_id': currentPhoneNum}).update({"$set": {"twitter_login.last_msg": newmsgid}})
 
         for msg in newMessages['events']:
             #Message body
@@ -59,7 +57,7 @@ for user in active_users:
             user = api.GetUser(user_id = msg['message_create']['sender_id'])
             name = user.name
 
-            message = client.messages.create(
+            message = twilioClient.messages.create(
                 body=actualContent + " was sent from " + name,
                 from_ = credentials.twil_number,
                 to = recipient

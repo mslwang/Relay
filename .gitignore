@@ -21,3 +21,4 @@ build/
 .config
 .npm
 credentials.py
+activetwitter.py

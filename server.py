@@ -102,6 +102,21 @@ def incoming_sms():
             resp.message("Message Sent")
 
     elif cmd == 'tweet':
+<<<<<<< HEAD
+        if mode == 'twitter':
+            api = twitter.Api(
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                access_token_key=access_token_key,
+                access_token_secret=access_token_secret)
+
+            message = body.split(' ', 1)[1]
+            api.PostUpdate(message)
+            resp.message("Tweet Sent")
+
+        else:
+            resp.message('{} does not exist for {}'.format(cmd, mode))
+=======
         user = sch.User.objects.get({'_id': "{}".format(from_)})
         login = user.twitter_login
         api = twitter.Api(
@@ -113,9 +128,11 @@ def incoming_sms():
         message = body.split(' ', 1)[1]
         api.PostUpdate(message)
         resp.message("Tweet Sent")
+>>>>>>> 15ee859fdd06c8af4c483d3174735a82b8969060
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
-
+    elif cmd == "switch":
+        
     else:
         resp.message("Invalid Command")
 

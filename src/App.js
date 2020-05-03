@@ -15,7 +15,7 @@ class App extends React.Component {
 			email: '',
 			password: '',
 			access_token: '',
-			access_token_secret: '',
+			access_secret_token: '',
 			api_key: '',
 			api_secret_key: '',
 			message: '',
@@ -33,7 +33,7 @@ class App extends React.Component {
 				active: this.state.integration,
 				tel: this.state.tel,
 				access_token: this.state.access_token,
-				access_token_secret: this.state.access_token_secret,
+				access_secret_token: this.state.access_secret_token,
 				api_key: this.state.api_key,
 				api_secret_key: this.state.api_secret_key
 			}
@@ -93,7 +93,7 @@ class App extends React.Component {
 					email: '',
 					password: '',
 					access_token: '',
-					access_token_secret: '',
+					access_secret_token: '',
 					api_key: '',
 					api_secret_key: '',
 					message: 'Integration successfully added.',
@@ -138,15 +138,15 @@ class App extends React.Component {
 	}
 
 	updateAccessTokenSecret = (accessTokenSecret) => {
-		this.setState({ access_token_secret: accessTokenSecret, message: '', warning: false })
+		this.setState({ access_secret_token: accessTokenSecret, message: '', warning: false })
 	}
 
 	updateAPIKey = (accessAPIKey) => {
-		this.setState({ access_api_key: accessAPIKey, message: '', warning: false })
+		this.setState({ api_key: accessAPIKey, message: '', warning: false })
 	}
 
 	updateAPIKeySecret = (accessAPIKeySecret) => {
-		this.setState({ access_api_key_secret: accessAPIKeySecret, message: '', warning: false })
+		this.setState({ api_secret_key: accessAPIKeySecret, message: '', warning: false })
 	}
 
 	renderMessengerForm = () => {

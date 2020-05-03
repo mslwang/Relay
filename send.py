@@ -15,6 +15,8 @@ from pymongo import MongoClient
 from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import os
 from dotenv import load_dotenv
+import schema as sch
+
 
 app = Flask(__name__, static_folder='../build', static_url_path='/')
 CORS(app)
@@ -69,6 +71,7 @@ def incoming_sms():
 
 @app.route('/signup', methods = ['POST'])
 def do_signup():
+
     data = json.loads(request.data)
     integration = data['integration']
     tel = data['tel']
@@ -76,7 +79,8 @@ def do_signup():
     password = data['password']
 
     # store this in mongo
-    print("{}, {}, {}, {}".format(integration, tel, email, password))
+    sch.User(tel, email=email, accounts=[sch.Account(integration=integration, username=email, utype="email", password=password)]).save()
+    #print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})
 
 

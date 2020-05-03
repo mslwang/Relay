@@ -138,7 +138,7 @@ class App extends React.Component {
 	}
 
 	updateAccessTokenSecret = (accessTokenSecret) => {
-		this.setState({ access_token_secret: accessTokenSecret, message: '', warning: false })
+		this.setState({ access_secret_token: accessTokenSecret, message: '', warning: false })
 	}
 
 	updateAPIKey = (accessAPIKey) => {
@@ -146,7 +146,7 @@ class App extends React.Component {
 	}
 
 	updateAPIKeySecret = (accessAPIKeySecret) => {
-		this.setState({ api_key_secret: accessAPIKeySecret, message: '', warning: false })
+		this.setState({ api_secret_key: accessAPIKeySecret, message: '', warning: false })
 	}
 
 	renderMessengerForm = () => {

@@ -132,7 +132,7 @@ def incoming_sms():
         else:
             resp.message('{} does not exist for {}'.format(cmd, mode))
         
-    elif cmd == "currentmode"
+    elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
 
     else:

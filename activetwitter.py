@@ -36,10 +36,7 @@ newmsgid = api.GetDirectMessages(return_json=True, count = 1).events[0].id
 if(newmsgid != lastmsgid):
     #TODO SEND SMS WITH:
     #This is a JSON with all the messages since the lastmsg
-    newMessages = api.GetDirectMessages(return_json=True, since_id = lastmsgid)
-
-    #Don't know if this works. Someone fix it pls. Code is for updating last_msg in db
-    sch.User.objects.raw({'_id': from_}).update({"$set": {"twitter_login": {"last_msg": newmsgid}})
+    sch.User.objects.raw({'_id': from_}).update({"$set": {"twitter_login.last_msg": newmsgid}})
 
     for msg in newMessages['events']:
         #Message body

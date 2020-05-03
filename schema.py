@@ -15,9 +15,9 @@ class User(MongoModel):
                 type: List(Account)
     """
     phone_number = fields.CharField(primary_key=True, required=True)
-    active = fields.CharField(require=True)
-    twitter_login = fields.EmbeddedDocumentField(TwitterAccount)
-    messenger_login = fields.EmbeddedDocumentField(MessengerAccount)
+    active = fields.CharField(required=True)
+    twitter_login = fields.EmbeddedDocumentField('TwitterAccount')
+    messenger_login = fields.EmbeddedDocumentField('MessengerAccount')
 
 class TwitterAccount(MongoModel):
     """
@@ -44,7 +44,7 @@ class TwitterAccount(MongoModel):
     access_token_secret = fields.CharField(required=True)
     api_key = fields.CharField(required=True)
     api_secret_key = fields.CharField(required=True)
-    last_msg = fields.BigIntegerField(required=True)
+    last_msg = fields.BigIntegerField(required=False)
 
 class MessengerAccount(MongoModel):
     """

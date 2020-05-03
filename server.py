@@ -131,8 +131,13 @@ def incoming_sms():
 
         else:
             resp.message('{} does not exist for {}'.format(cmd, mode))
+<<<<<<< HEAD
 
     elif cmd == "currentmode"
+=======
+        
+    elif cmd == "currentmode":
+>>>>>>> 8ec49576022175bea8af385d9166f0b61ee2b590
         resp.message("Currently set on {}".format(mode))
 
     else:

@@ -14,7 +14,6 @@ import getpass
 from pymongo import MongoClient
 from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import os
-from dotenv import load_dotenv
 import schema as sch
 import twitter
 
@@ -70,68 +69,51 @@ def incoming_sms():
             resp.message("Invalid mode type")
 
     elif cmd == "msg" or cmd == 'message':
-
         #get user credentials
-        valid_accounts = sch.User.objects.get({'_id': "{}".format(from_)}).accounts
+        user = sch.User.objects.get({'_id': "{}".format(from_)})
+        mode = user.active
 
-        if mode in valid_accounts.integration:
-            if mode == 'messenger':
-                #client.logout()
-                login = valid_accounts[mode]
-                client = Client(login.email, login.password)
-                recipient = body.split(' ', 2)[1]
-                user = client.searchForUsers(recipient)[0]
-                userId = user.uid
+        if mode == 'messenger':
+            login = user[fb_login]
+            client = Client(login.email, login.password)
+            recipient = body.split(' ', 2)[1]
+            user = client.searchForUsers(recipient)[0]
+            userId = user.uid
 
-                actualMessage = body.split(' ', 2)[2]
-                client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
+            actualMessage = body.split(' ', 2)[2]
+            client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
 
-                resp.message("Message Sent")
+            resp.message("Message Sent")
 
-            elif mode == 'twitter':
-                consumer_key = ''
-                consumer_secret = ''
-                access_token_key = ''
-                access_token_secret = ''
+        elif mode == 'twitter':
+            api = twitter.Api(
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                access_token_key=access_token_key,
+                access_token_secret=access_token_secret)
 
-                api = twitter.Api(
-                    consumer_key=consumer_key,
-                    consumer_secret=consumer_secret,
-                    access_token_key=access_token_key,
-                    access_token_secret=access_token_secret)
+            screenName = body.split(' ',2)[1]
+            user = api.GetUser(screen_name = screenName)
+            twitterid = user.id
+            message = body.split(' ', 2)[2]
 
-                screenName = body.split(' ',2)[1]
-                user = api.GetUser(screen_name = screenName)
-                twitterid = user.id
-                message = body.split(' ', 2)[2]
-
-                api.PostDirectMessage(message, user_id = twitterid)
-                resp.message("Message Sent")
+            api.PostDirectMessage(message, user_id = twitterid)
+            resp.message("Message Sent")
 
     elif cmd == 'tweet':
         if mode == 'twitter':
-            valid_accounts = sch.User.objects.get({'_id': "{}".format(from_)}).accounts
+            api = twitter.Api(
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                access_token_key=access_token_key,
+                access_token_secret=access_token_secret)
 
-            if mode in valid_accounts.integration:
-                consumer_key = ''
-                consumer_secret = ''
-                access_token_key = ''
-                access_token_secret = ''
-
-                api = twitter.Api(
-                    consumer_key=consumer_key,
-                    consumer_secret=consumer_secret,
-                    access_token_key=access_token_key,
-                    access_token_secret=access_token_secret)
-
-                message = body.split(' ', 1)[1]
-
-                api.PostUpdate(message)
-                resp.message("Tweet Sent")
+            message = body.split(' ', 1)[1]
+            api.PostUpdate(message)
+            resp.message("Tweet Sent")
 
         else:
             resp.message('{} does not exist for {}'.format(cmd, mode))
-     
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
 

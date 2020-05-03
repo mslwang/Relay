@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 aenum==2.2.3
 attrs==19.3.0
 beautifulsoup4==4.9.0
+=======
+>>>>>>> 3d8b1fc91641b33a82b075711b03d9653a60b259
 astroid==2.4.0
 certifi==2020.4.5.1
 chardet==3.0.4
@@ -13,6 +16,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.2
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
+<<<<<<< HEAD
 paho-mqtt==1.5.0
 PyJWT==1.7.1
 python-dotenv==0.13.0
@@ -27,6 +31,15 @@ pymongo==3.10.1
 pytz==2020.1
 requests==2.23.0
 six==1.14.0
+=======
+mccabe==0.6.1
+PyJWT==1.7.1
+pylint==2.5.0
+pymongo==3.10.1
+pytz==2020.1
+requests==2.23.0
+six==1.14.0
+>>>>>>> 3d8b1fc91641b33a82b075711b03d9653a60b259
 toml==0.10.0
 twilio==6.39.0
 urllib3==1.25.9

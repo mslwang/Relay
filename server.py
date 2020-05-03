@@ -126,7 +126,7 @@ def do_signup():
     data = json.loads(request.data)
     integration = data['integration']
     tel = "+1" + data['tel']
-    if(integration === "messenger"):
+    if integration == "messenger":
         email = data['email']
         password = data['password']
         sch.User(tel, email=data['email'], active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))

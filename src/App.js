@@ -7,7 +7,7 @@ class App extends React.Component {
 	
 	constructor() {
 		super();
-		this.flaskEndpoint = "http://localhost:5000"
+		this.flaskEndpoint = ""
 
 		this.state = {
 			integration: '',

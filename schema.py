@@ -61,8 +61,8 @@ class User(MongoModel):
     """
     phone_number = fields.CharField(primary_key=True, required=True)
     active = fields.CharField(required=True)
-    twitter_login = fields.EmbeddedDocumentField(TwitterAccount)
-    messenger_login = fields.EmbeddedDocumentField(MessengerAccount)
+    twitter_login = fields.EmbeddedDocumentField('TwitterAccount')
+    messenger_login = fields.EmbeddedDocumentField('MessengerAccount')
 
 def initial():
     connect(credentials.dbUrl)

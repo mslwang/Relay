@@ -21,6 +21,7 @@ import os
 import schema as sch
 import twitter
 import threading
+from activetwitter import checkDMs
 
 app = Flask(__name__, static_folder='build')
 messenger_instances = dict()

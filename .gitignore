@@ -1,6 +1,9 @@
 .vscode
+node_modules
 venv/
 env/
 .env
 venv
 twilio_creds.py
+*.pyc
+.DS_Store

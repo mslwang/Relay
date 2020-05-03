@@ -132,10 +132,10 @@ def do_signup():
         sch.User(tel, active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))
     elif integration == "twitter":
         access_token = data['access_token']
-        access_token_secret = data['access_token_secret']
+        access_secret_token = data['access_secret_token']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
-        sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key))
+        sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_secret_token, api_key=api_key, api_secret_key=api_secret_key))
 
     return json.dumps({"status": 200})
 

@@ -115,7 +115,6 @@ def incoming_sms():
         resp.message("Tweet Sent")
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
-
     else:
         resp.message("Invalid Command")
 
@@ -130,13 +129,13 @@ def do_signup():
     if(integration === "messenger"):
         email = data['email']
         password = data['password']
-        sch.User(tel, email=data['email'], active="twitter", messenger_login=sch.MessengerAccount(email=email, password=password))
-    elif(integration === "twitter"):
+        sch.User(tel, email=data['email'], active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))
+    elif integration == "twitter":
         access_token = data['access_token']
         access_token_secret = data['access_token_secret']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
-        sch.User(tel, email=data['email'], active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key))
+        sch.User(tel, email=data['email'], active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key))
 
     print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})

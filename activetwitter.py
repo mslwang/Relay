@@ -37,6 +37,7 @@ if(newmsgid != lastmsgid):
     #This is a JSON with all the messages since the lastmsg
     newMessages = api.GetDirectMessages(return_json=True, since_id = lastmsgid)
 
+    #TODO: Update database with newmsgid
     for msg in newMessages['events']:
         #Message body
         actualContent = msg['message_create']['message_data']['text']

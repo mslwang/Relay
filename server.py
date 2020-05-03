@@ -154,10 +154,6 @@ def do_signup():
 
     return json.dumps({"status": 200})
 
-
-
-    return json.dumps({"status": 200})
-
 @app.route('/exit', methods = ['GET'])
 def exit():
     client.logout()

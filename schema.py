@@ -65,7 +65,6 @@ class MessengerAccount(MongoModel):
     password = fields.CharField(required=True)
 
 def initial():
-    load_dotenv()
     connect(credentials.dbUrl)
     client = MongoClient(credentials.dbUrl)
     return client.Relay

@@ -14,6 +14,10 @@ class App extends React.Component {
 			tel: '',
 			email: '',
 			password: '',
+			access_token: '',
+			access_token_secret: '',
+			api_key: '',
+			api_secret_key: '',
 			message: '',
 			warning: false
 		}
@@ -84,11 +88,16 @@ class App extends React.Component {
 				// todo, update success msg
 			  if (data.status === 200) {
 				this.setState({     
-				  integration: '',
-				  tel: '',
-				  email: '',
-				  password: '',
-				  message: 'Integration successfully added.'
+					integration: '',
+					tel: '',
+					email: '',
+					password: '',
+					access_token: '',
+					access_token_secret: '',
+					api_key: '',
+					api_secret_key: '',
+					message: 'Integration successfully added.',
+					warning: false
 				})
 			  }
 			  else {

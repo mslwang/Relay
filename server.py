@@ -64,7 +64,7 @@ def incoming_sms():
         if mode in modes:
             resp.message("Mode switched to {}".format(mode))
             sch.User.objects.raw({'_id': from_}).update({"$set": {"active": mode}})
-        
+
         else:
             resp.message("Invalid mode type")
 
@@ -135,7 +135,13 @@ def do_signup():
         access_token_secret = data['access_token_secret']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
-        sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key))
+        api = twitter.Api(
+            consumer_key=api_key,
+            consumer_secret=api_secret_key,
+            access_token_key=access_token,
+            access_token_secret=access_token_secret)
+        lastmsgid = api.GetDirectMessages(return_json=True, count = 1).events[0].id
+        sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key, last_msg = lastmsgid))
 
     return json.dumps({"status": 200})
 

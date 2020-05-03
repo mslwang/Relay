@@ -17,7 +17,6 @@ import os
 import schema as sch
 import twitter
 
-load_dotenv()
 app = Flask(__name__, static_folder='build')
 CORS(app)
 mongoClient = MongoClient('localhost', 27017)

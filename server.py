@@ -59,7 +59,7 @@ def incoming_sms():
             returnMessage += "{}: {}\n".format(user.name, user.uid)
 
         resp.message(returnMessage)
-        
+
     elif cmd == "switch":
         mode = body.split(' ', 2)[1].lower()
 
@@ -67,7 +67,7 @@ def incoming_sms():
 
         if mode in modes:
             resp.message("Mode switched to {}".format(mode))
-        
+
         else:
             resp.message("Invalid mode type")
 
@@ -91,12 +91,25 @@ def incoming_sms():
                 resp.message("Message Sent")
 
             elif mode == 'twitter':
-                #api = twitter.Api(
-                #    consumer_key=consumer_key,
-                #    consumer_secret=consumer_secret,
-                #    access_token_key=access_token_key,
-                #    access_token_secret=access_token_secret)
-    
+                consumer_key = ''
+                consumer_secret = ''
+                access_token_key = ''
+                access_token_secret = ''
+
+                api = twitter.Api(
+                    consumer_key=consumer_key,
+                    consumer_secret=consumer_secret,
+                    access_token_key=access_token_key,
+                    access_token_secret=access_token_secret)
+
+                screenName = body.split(' ',2)[1]
+                user = api.getUser(screen_name = screenName)
+                twitterid = user.id
+                message = body.split(' ', 2)[2]
+
+                api.PostDirectMessage(message, user_id = twitterid)
+                resp.message("Message Sent")
+
     else:
         resp.message("Invalid Command")
 
@@ -123,8 +136,3 @@ def exit():
 
 if __name__ == "__main__":
     app.run(threaded=True, port=5000)
-
-        
-
-
-    

@@ -142,11 +142,11 @@ class App extends React.Component {
 	}
 
 	updateAPIKey = (accessAPIKey) => {
-		this.setState({ access_api_key: accessAPIKey, message: '', warning: false })
+		this.setState({ api_key: accessAPIKey, message: '', warning: false })
 	}
 
 	updateAPIKeySecret = (accessAPIKeySecret) => {
-		this.setState({ access_api_key_secret: accessAPIKeySecret, message: '', warning: false })
+		this.setState({ api_key_secret: accessAPIKeySecret, message: '', warning: false })
 	}
 
 	renderMessengerForm = () => {

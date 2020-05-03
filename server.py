@@ -12,6 +12,7 @@ from fbchat import Client
 from fbchat.models import *
 import getpass
 from pymongo import MongoClient
+from logzero import logger as log
 from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import credentials
 from relaybot import RelayBot
@@ -39,7 +40,8 @@ def serve(path):
 def incoming_sms():
     #Get the message
     body = request.values.get('Body', None)
-    from_ = request.values.get('from')
+    log.info(request.values.to_dict())
+    from_ = request.values.get('From')
     resp = MessagingResponse()
 
     cmds = {
@@ -72,17 +74,20 @@ def incoming_sms():
 
     elif cmd == "msg" or cmd == 'message':
         #get user credentials
-        user = sch.User.objects.get({'_id': "{}".format(from_)})
+        log.info(from_) 
+        user = sch.User.objects.get({'_id': from_})
         mode = user.active
 
         if mode == 'messenger':
             login = user.messenger_login
-            client = RelayClient(login.email, login.password)
+            client = RelayBot(login.email, login.password)
             recipient = body.split(' ', 2)[1]
             user = client.searchForUsers(recipient)[0]
             userId = user.uid
+            targetType = ThreadType.USER
 
             actualMessage = body.split(' ', 2)[2]
+            log.info(actualMessage)
             client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
 
             resp.message("Message Sent")

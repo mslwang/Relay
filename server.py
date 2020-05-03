@@ -63,7 +63,7 @@ def incoming_sms():
 
         if mode in modes:
             resp.message("Mode switched to {}".format(mode))
-            sch.User.objects.raw({'_id': from_}).update({"$set": {"active": mode}}
+            sch.User.objects.raw({'_id': from_}).update({"$set": {"active": mode}})
         
         else:
             resp.message("Invalid mode type")

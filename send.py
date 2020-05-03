@@ -1,16 +1,24 @@
 import requests
 import json
+import time
 import os
 import sys
 from twilio.rest import Client
 from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
 from twilio import twiml
 from flask import Flask, request
+from flask_cors import CORS
 from fbchat import Client
 from fbchat.models import *
 import getpass
+from pymongo import MongoClient
+from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+CORS(app)
+mongoClient = MongoClient('localhost', 27017)
 
 client = Client('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 
@@ -53,6 +61,19 @@ def incoming_sms():
         resp.message("Invalid Command")
 
     return str(resp)
+
+
+@app.route('/signup', methods = ['POST'])
+def do_signup():
+    data = json.loads(request.data)
+    integration = data['integration']
+    tel = data['tel']
+    email = data['email']
+    password = data['password']
+
+    # store this in mongo
+    print("{}, {}, {}, {}".format(integration, tel, email, password))
+    return json.dumps({"status": 200})
 
 
 @app.route('/exit', methods = ['GET'])

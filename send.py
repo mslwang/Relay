@@ -6,7 +6,7 @@ import sys
 from twilio.rest import Client
 from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
 from twilio import twiml
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from fbchat import Client
 from fbchat.models import *
@@ -17,8 +17,7 @@ import os
 from dotenv import load_dotenv
 import schema as sch
 
-
-app = Flask(__name__, static_folder='../build', static_url_path='/')
+app = Flask(__name__, static_folder='build')
 CORS(app)
 mongoClient = MongoClient('localhost', 27017)
 
@@ -27,6 +26,13 @@ client = Client('kelvin.zhang@uwaterloo.ca', getpass.getpass())
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 #user is sending something
 @app.route('/sms', methods = ['POST'])
@@ -82,7 +88,6 @@ def do_signup():
     sch.User(tel, email=email, accounts=[sch.Account(integration=integration, username=email, utype="email", password=password)]).save()
     #print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})
-
 
 @app.route('/exit', methods = ['GET'])
 def exit():

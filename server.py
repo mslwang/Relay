@@ -129,7 +129,7 @@ def do_signup():
     if integration == "messenger":
         email = data['email']
         password = data['password']
-        sch.User(tel, email=data['email'], active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))
+        sch.User(tel, active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))
     elif integration == "twitter":
         access_token = data['access_token']
         access_token_secret = data['access_token_secret']

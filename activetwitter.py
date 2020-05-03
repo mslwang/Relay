@@ -46,8 +46,10 @@ if(newmsgid != lastmsgid):
     #This is a JSON with all the messages since the lastmsg
     newMessages = api.GetDirectMessages(return_json=True, since_id = lastmsgid)
 
+    recipient = client.find({"consumer_key":'{}'.format(consumer_key)})
+    currentPhoneNum = recipient._id
     #THIS DOESN'T WORK. Need to get id of the current user
-    sch.User.objects.raw({'_id': PLACEHOLDER}).update({"$set": {"twitter_login.last_msg": newmsgid}})
+    sch.User.objects.raw({'_id': currentPhoneNum}).update({"$set": {"twitter_login.last_msg": newmsgid}})
 
     for msg in newMessages['events']:
         #Message body
@@ -55,8 +57,6 @@ if(newmsgid != lastmsgid):
         #Sender name
         user = api.GetUser(user_id = msg['message_create']['sender_id'])
         name = user.name
-
-        recipient = client.find({"consumer_key":'{}'.format(consumer_key)})
 
         message = client.messages.create(
             body=actualContent,

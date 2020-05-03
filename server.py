@@ -135,9 +135,8 @@ def do_signup():
         access_token_secret = data['access_token_secret']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
-        sch.User(tel, email=data['email'], active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key))
+        sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key))
 
-    print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})
 
 @app.route('/exit', methods = ['GET'])

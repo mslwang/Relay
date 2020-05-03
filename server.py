@@ -3,6 +3,7 @@ import json
 import time
 import os
 import sys
+import atexit
 from twilio.rest import Client
 from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
 from twilio import twiml
@@ -24,6 +25,7 @@ import threading
 app = Flask(__name__, static_folder='build')
 messenger_instances = dict()
 twitter_instances = dict()
+threads = []
 
 connect(credentials.dbUrl)
 CORS(app)
@@ -36,21 +38,24 @@ def newMessengerInstance(phoneNum, email, password):
     client = RelayBot(phoneNum, email, password)
     log.info("adding {}, {}, {}".format(phoneNum, email, password))
     th = threading.Thread(target=listen, args=(client,))
+    threads.append(th)
     th.start()
     messenger_instances[phoneNum] = client
     if not client.isLoggedIn():
         raise Exception
+    return client
 
-def newTwitterInstance(phoneNum, key, secret, access_key, access_secret):
-    log.info("adding {}, {}, {}, {}, {}".format(phoneNum, key, secret, access_key, access_secret))
+def newTwitterInstance(phoneNum, consumer_key, consumer_secret, access_token_key, access_token_secret):
+    log.info("adding {}, {}, {}, {}, {}".format(phoneNum, consumer_key, consumer_secret, access_token_key, access_token_secret))
     client = twitter.Api(
-            consumer_key=key,
-            consumer_secret=secret,
-            access_token_key=access_key,
-            access_token_secret_login=access_secret)
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token_key=access_token_key,
+            access_token_secret=access_token_secret)
     twitter_instances[phoneNum] = client
     if not client.VerifyCredentials():
         raise Exception
+    return client
 
 # when we start, populate instances
 users = list(sch.User.objects.all())
@@ -67,9 +72,10 @@ for user in users:
         login = user.twitter_login
         try:
             newTwitterInstance(
-                consumer_key=login.consumer_key,
-                consumer_secret=login.consumer_secret,
-                access_token_key=login.access_token_key,
+                phoneNum,
+                consumer_key=login.api_key,
+                consumer_secret=login.api_secret_key,
+                access_token_key=login.access_token,
                 access_token_secret=login.access_token_secret)
         except Exception:
             pass
@@ -134,10 +140,7 @@ def incoming_sms():
                 client = messenger_instances[from_]
             else:
                 login = user.messenger_login
-                client = RelayBot(user.phone_number, login.email, login.password)
-                client.listen()
-                messenger_instances[phoneNum] = client
-            
+                client = newMessengerInstance(user.phone_number, user.email, user.password)  
             if not client or not client.isLoggedIn():
                 resp.message("Failed to log in, please update credentials")
                 return str(resp)
@@ -154,32 +157,49 @@ def incoming_sms():
             resp.message("Message Sent")
 
         elif mode == 'twitter':
-            login = user.twitter_login
-            api = twitter.Api(
-                consumer_key=login.consumer_key,
-                consumer_secret=login.consumer_secret,
-                access_token_key=login.access_token_key,
-                access_token_secret=login.access_token_secret)
+            client = None
+            if from_ in twitter_instances:
+                client = twitter_instances[from_]
+            else:
+                login = user.twitter_login
+                client = newTwitterInstance(
+                    user.phone_number,
+                    consumer_key=login.api_key,
+                    consumer_secret=login.api_secret_key,
+                    access_token_key=login.access_token,
+                    access_token_secret=login.access_token_secret)
+            if not client or not client.VerifyCredentials():
+                resp.message("Failed to log in, please update credentials")
+                return str(resp)
 
             screenName = body.split(' ',2)[1]
-            user = api.GetUser(screen_name = screenName)
+            user = client.GetUser(screen_name = screenName)
             twitterid = user.id
             message = body.split(' ', 2)[2]
 
-            api.PostDirectMessage(message, user_id = twitterid)
+            client.PostDirectMessage(message, user_id = twitterid)
             resp.message("Message Sent")
 
     elif cmd == 'tweet':
         user = sch.User.objects.get({'_id': "{}".format(from_)})
         login = user.twitter_login
-        api = twitter.Api(
-            consumer_key=login.consumer_key,
-            consumer_secret=login.consumer_secret,
-            access_token_key=login.access_token_key,
-            access_token_secret=login.access_token_secret)
+        client = None
+        if from_ in twitter_instances:
+            client = twitter_instances[from_]
+        else:
+            login = user.twitter_login
+            client = newTwitterInstance(
+                user.phone_number,
+                consumer_key=login.api_key,
+                consumer_secret=login.api_secret_key,
+                access_token_key=login.access_token,
+                access_token_secret=login.access_token_secret)
+        if not client or not client.VerifyCredentials():
+            resp.message("Failed to log in, please update credentials")
+            return str(resp)
 
         message = body.split(' ', 1)[1]
-        api.PostUpdate(message)
+        client.PostUpdate(message)
         resp.message("Tweet Sent")
 
     elif cmd == "currentmode":
@@ -212,19 +232,21 @@ def do_signup():
     elif integration == "twitter":
         print(data)
         access_token = data['access_token']
-        access_secret_token = data['access_secret_token']
+        access_token_secret = data['access_secret_token']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
+        client = None
         try:
-            newTwitterInstance(
+            client = newTwitterInstance(
+                tel,
                 consumer_key=api_key,
                 consumer_secret=api_secret_key,
                 access_token_key=access_token,
-                access_token_secret=access_token_secret)
+                access_token_secret=access_secret_token)
+            lastmsgid = client.GetDirectMessages(return_json=True, count = 1).events[0].id
         except Exception:
-            log.info("whoops")
             pass
-        lastmsgid = api.GetDirectMessages(return_json=True, count = 1).events[0].id
+        lastmsgid = 100
         sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key, last_msg = lastmsgid)).save()
 
     return json.dumps({"status": 200})
@@ -232,6 +254,13 @@ def do_signup():
 @app.route('/exit', methods = ['GET'])
 def exit():
     client.logout()
+
+def close_running_threads():
+    for thread in threads:
+        thread.join()
+    print("Merging threads")
+
+atexit.register(close_running_threads)
 
 if __name__ == "__main__":
     app.run(threaded=True, port=5000)

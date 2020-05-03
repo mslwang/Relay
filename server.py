@@ -128,7 +128,7 @@ def incoming_sms():
 
                 message = body.split(' ', 1)[1]
 
-                api.PostTweet(message)
+                api.PostUpdate(message)
                 resp.message("Tweet Sent")
         
         else:

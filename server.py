@@ -139,7 +139,17 @@ def do_signup():
         access_secret_token = data['access_secret_token']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
-        sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_secret_token, api_key=api_key, api_secret_key=api_secret_key)).save()
+        api = twitter.Api(
+            consumer_key=api_key,
+            consumer_secret=api_secret_key,
+            access_token_key=access_token,
+            access_token_secret=access_token_secret)
+        lastmsgid = api.GetDirectMessages(return_json=True, count = 1).events[0].id
+        sch.User(tel, active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key, last_msg = lastmsgid)).save()
+
+    return json.dumps({"status": 200})
+
+
 
     return json.dumps({"status": 200})
 

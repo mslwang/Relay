@@ -13,11 +13,13 @@ class App extends React.Component {
 			tel: '',
 			email: '',
 			password: '',
-			message: ''
+			message: '',
+			warning: false
 		}
 	}
-	
+
 	submitClicked = (event) => {
+
 		event.preventDefault();
 		const requestBody = {
 			integration: this.state.integration,
@@ -25,8 +27,22 @@ class App extends React.Component {
 			email: this.state.email,
 			password: this.state.password
 		}
-		console.log(requestBody)
-		fetch(`${this.flaskEndpoint}/signup`, {
+		console.log(requestBody);
+		
+		const checkFilled = new Promise((resolve, reject) => {
+			if(requestBody.integration !== "messenger" && requestBody.integration !== "twitter" && requestBody.integration !== "instagram"){
+				reject(1);
+			} else if(requestBody.tel === ""){
+				reject(2);
+			} else if (requestBody.email === ""){
+				reject(3);
+			} else if(requestBody.password === ""){
+				reject(4);
+			} else{
+				resolve();
+			}
+		})
+		.then(fetch(`${this.flaskEndpoint}/signup`, {
 			method: 'POST',
 			headers: {
 			  'Content-Type': 'application/json',
@@ -57,29 +73,43 @@ class App extends React.Component {
 				this.handleError(response.data.message);
 			}
 			else {
-				this.handleError('An error occured. Please try again later.');
+				this.handleError('An error occurred. Please try again later.');
 			}
-		  })
+		  }),
+		  (val) => {
+			  this.setState({warning: true});
+			  switch(val){
+				  case 1: this.setState({message: "Select integration."});
+							break;
+				  case 2: this.setState({message: "Fill in phone number."});
+							  break;
+				  case 3: this.setState({message: "Fill in email."});
+							  break;
+				  case 4: this.setState({message: "Fill in password."});
+							  break;
+				
+			  }
+		  });
 	}	
 
 	handleError = (message) => {
-		this.setState({ message: message })
+		this.setState({ message: message})
 	}
 
 	setIntegration = (integration) => {
-		this.setState({ integration: integration})
+		this.setState({ integration: integration, message: '', warning: false})
 	}
 
 	updateTel = (tel) => {
-		this.setState({ tel: tel })
+		this.setState({ tel: tel, message: '', warning: false})
 	}
 
 	updateEmail = (email) => {
-		this.setState({ email: email });
+		this.setState({ email: email, message: '', warning: false});
 	}
 
 	updatePassword = (password) => {
-		this.setState({ password: password})
+		this.setState({ password: password, message: '', warning: false})
 	}
 
 	render = () => {
@@ -89,7 +119,7 @@ class App extends React.Component {
 			  <div className="container" id="container">
 				  <div className="form-container add-int-container">
 					  { this.state.message ? 
-						  (<div className="status">{this.state.message}</div>)
+						  (<div className="status" style={{backgroundColor: this.state.warning ? "#ff726f" : "#4ee45e"}}>{this.state.message}</div>)
 						  : null
 					  }
 					  <h1>Add an Integration</h1>

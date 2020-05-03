@@ -3,7 +3,7 @@ from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import os
 from dotenv import load_dotenv
 
-class Twitter(MongoModel):
+class Twitter(EmbeddedMongoModel):
     """
     Schema for a twitter user
 
@@ -24,15 +24,14 @@ class Twitter(MongoModel):
     api_secret_key -- api secret key
                       type: String
     """
-    phone_number = fields.CharField(primary_key=True, required=True)
     access_token = fields.CharField(required=True)
     access_token_secret = fields.CharField(required=True)
     api_key = fields.CharField(required=True)
     api_secret_key = fields.CharField(required=True)
-    active = fields.BooleanField(required=True)
+
     
 
-class Messenger(MongoModel):
+class Messenger(EmbeddedMongoModel):
     """
     Schema for a messenger user
 
@@ -47,10 +46,15 @@ class Messenger(MongoModel):
     password -- password
                 type: String
     """
-    phone_number = fields.CharField(primary_key=True, required=True)
     email = fields.EmailField(required=True)
     password = fields.CharField(required=True)
-    active = fields.BooleanField(required=True)
+
+class User(MongoModel):
+    phone_number = fields.CharField(primary_key=True, required=True)
+    twitter = fields.EmbeddedDocumentField('Twitter')
+    messenger = fields.EmbeddedDocumentField('Messenger')
+    accounts_available = fields.ListField(default=[])
+    active = fields.CharField(default='null', choices=['twitter', 'messenger', 'null'])
 
 def initial():
     load_dotenv()

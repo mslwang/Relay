@@ -131,7 +131,7 @@ def incoming_sms():
 
         else:
             resp.message('{} does not exist for {}'.format(cmd, mode))
-     
+        
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
 
@@ -146,19 +146,12 @@ def do_signup():
 
     data = json.loads(request.data)
     integration = data['integration']
-    if(integration === "messenger"):
-        tel = data['tel']
-        email = data['email']
-        password = data['password']
+    if(integration == "messenger"):
         sch.Messenger(data['tel'], email=data['email'], password=data['password'], active=False).save(force_insert=True)
         print("{}, {}, {}, {}".format(integration, tel, email, password))
-    elif(integration === "twitter"):
-        
+    elif(integration == "twitter"):
+        sch.Messenger(data['tel'], access_token=data['access_token'], access_token_secret=data['access_token_secret'], api_key=data['api_key'], api_secret_key=data['api_secret_key']).save(force_insert=True)
 
-    
-    # store this in mongo
-    sch.User(tel, email=email, accounts=[sch.Account(integration=integration, username=email, utype="email", password=password)]).save()
-    #print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})
 
 @app.route('/exit', methods = ['GET'])

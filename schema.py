@@ -15,7 +15,7 @@ class User(MongoModel):
                 type: List(Account)
     """
     phone_number = fields.CharField(primary_key=True, required=True)
-    active = fields.CharField(require=True)
+    active = fields.CharField(required=True)
     twitter_login = fields.EmbeddedDocumentField(TwitterAccount)
     messenger_login = fields.EmbeddedDocumentField(MessengerAccount)
 
@@ -65,7 +65,6 @@ class MessengerAccount(MongoModel):
     password = fields.CharField(required=True)
 
 def initial():
-    load_dotenv()
     connect(credentials.dbUrl)
     client = MongoClient(credentials.dbUrl)
     return client.Relay

@@ -6,9 +6,13 @@ from pymongo import MongoClient
 from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import credentials
 import schema as sch
+from twilio.rest import Client as twilClient
+from twilio.twiml.messaging_response import Body, Message, Redirect, MessagingResponse
+from twilio import twiml
 
 connect(credentials.dbUrl)
 client = MongoClient(credentials.dbUrl).Relay.users
+
 
 
 #infinite loop baby
@@ -33,6 +37,10 @@ api = twitter.Api(
 
 newmsgid = api.GetDirectMessages(return_json=True, count = 1).events[0].id
 
+account_sid = credentials.twil_account_id
+auth_token = credentials.twil_auth_token
+twiloClient = twilClient(account_sid, auth_token)
+
 if(newmsgid != lastmsgid):
     #TODO SEND SMS WITH:
     #This is a JSON with all the messages since the lastmsg
@@ -47,3 +55,11 @@ if(newmsgid != lastmsgid):
         #Sender name
         user = api.GetUser(user_id = msg['message_create']['sender_id'])
         name = user.name
+
+        recipient = client.find({"consumer_key":'{}'.format(consumer_key)})
+
+        message = client.messages.create(
+            body=actualContent,
+            from_ = credentials.twil_number,
+            to = recipient
+        )

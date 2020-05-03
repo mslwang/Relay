@@ -8,3 +8,5 @@ twilio_creds.py
 *.pyc
 .DS_Store
 build/
+node_modules
+build/

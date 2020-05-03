@@ -17,7 +17,6 @@ import os
 import schema as sch
 import twitter
 
-load_dotenv()
 app = Flask(__name__, static_folder='build')
 CORS(app)
 mongoClient = MongoClient('localhost', 27017)
@@ -115,8 +114,6 @@ def incoming_sms():
         resp.message("Tweet Sent")
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
-    elif cmd == "switch":
-        
     else:
         resp.message("Invalid Command")
 
@@ -128,16 +125,16 @@ def do_signup():
     data = json.loads(request.data)
     integration = data['integration']
     tel = data['tel']
-    if(integration === "messenger"):
+    if integration == "messenger":
         email = data['email']
         password = data['password']
         sch.User(tel, email=data['email'], active="messenger", messenger_login=sch.MessengerAccount(email=email, password=password))
-    elif(integration === "twitter"):
+    elif integration == "twitter":
         access_token = data['access_token']
         access_token_secret = data['access_token_secret']
         api_key = data['api_key']
         api_secret_key = data['api_secret_key']
-        sch.User(tel, email=data['email'], active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key))
+        sch.User(tel, email=data['email'], active="twitter", twitter_login=sch.TwitterAccount(access_token=access_token, access_token_secret=access_token_secret, api_key=api_key, api_secret_key=api_secret_key))
 
     print("{}, {}, {}, {}".format(integration, tel, email, password))
     return json.dumps({"status": 200})

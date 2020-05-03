@@ -16,6 +16,8 @@ from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import os
 from dotenv import load_dotenv
 import schema as sch
+import twitter
+
 
 app = Flask(__name__, static_folder='build')
 CORS(app)
@@ -39,6 +41,7 @@ def serve(path):
 def incoming_sms():
     #Get the message
     body = request.values.get('Body', None)
+    from_ = request.values.get('from')
     resp = MessagingResponse()
 
     cmds = {
@@ -57,17 +60,42 @@ def incoming_sms():
 
         resp.message(returnMessage)
         
-    elif cmd == "msg" or cmd == 'message':
-        recipient = body.split(' ', 2)[1]
-        user = client.searchForUsers(recipient)[0]
-        userId = user.uid
+    elif cmd == "switch":
+        mode = body.split(' ', 2)[1].lower()
 
-        actualMessage = body.split(' ', 2)[2]
-        targetType = ThreadType.USER
+        modes = ['messenger', 'twitter']
+
+        if mode in modes:
+            resp.message("Mode switched to {}".format(mode))
         
-        client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
+        else:
+            resp.message("Invalid mode type")
 
-        resp.message("Message Sent")
+    elif cmd == "msg" or cmd == 'message':
+
+        #get user credentials
+        valid_accounts = sch.User.objects.get({'_id': "{}".format(from_)}).accounts
+
+        if mode in valid_accounts:
+            if mode == 'messenger':
+                #client.logout()
+                login = valid_accounts[mode]
+                client = Client(login.email, login.password)
+                recipient = body.split(' ', 2)[1]
+                user = client.searchForUsers(recipient)[0]
+                userId = user.uid
+
+                actualMessage = body.split(' ', 2)[2]
+                client.send(Message(text=actualMessage), thread_id=userId, thread_type=targetType)
+
+                resp.message("Message Sent")
+
+            elif mode == 'twitter':
+                #api = twitter.Api(
+                #    consumer_key=consumer_key,
+                #    consumer_secret=consumer_secret,
+                #    access_token_key=access_token_key,
+                #    access_token_secret=access_token_secret)
     
     else:
         resp.message("Invalid Command")

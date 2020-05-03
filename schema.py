@@ -2,6 +2,26 @@ from pymongo import MongoClient
 from pymodm import connect, fields, MongoModel, EmbeddedMongoModel
 import credentials  
 
+<<<<<<< HEAD
+=======
+class User(MongoModel):
+    """
+    Schema for a user
+    Properties:
+    phone_number -- note: will represent unique id
+            type: String
+             
+    email -- email
+             type: Email
+    accounts -- List of accounts
+                type: List(Account)
+    """
+    phone_number = fields.CharField(primary_key=True, required=True)
+    active = fields.CharField(required=True)
+    twitter_login = fields.EmbeddedDocumentField('TwitterAccount')
+    messenger_login = fields.EmbeddedDocumentField('MessengerAccount')
+
+>>>>>>> 79b1f79bbdc7d3a477da0365bd5c9c423091ff66
 class TwitterAccount(MongoModel):
     """
     Schema for a twitter user
@@ -27,7 +47,7 @@ class TwitterAccount(MongoModel):
     access_token_secret = fields.CharField(required=True)
     api_key = fields.CharField(required=True)
     api_secret_key = fields.CharField(required=True)
-    last_msg = fields.BigIntegerField(required=True)
+    last_msg = fields.BigIntegerField(required=False)
 
 class MessengerAccount(MongoModel):
     """

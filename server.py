@@ -17,7 +17,6 @@ import os
 import schema as sch
 import twitter
 
-load_dotenv()
 app = Flask(__name__, static_folder='build')
 CORS(app)
 mongoClient = MongoClient('localhost', 27017)
@@ -116,8 +115,7 @@ def incoming_sms():
         resp.message("Tweet Sent")
     elif cmd == "currentmode":
         resp.message("Currently set on {}".format(mode))
-    elif cmd == "switch":
-        
+
     else:
         resp.message("Invalid Command")
 

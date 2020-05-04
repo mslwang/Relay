@@ -13,6 +13,7 @@
 **Important note**: After installing python-twitter, locate the api.py file (it should tell you where this is being downloaded toas you install python-twitter). Then find the GetDirectMessage function and locate the following code snippet:
 
 ``` python
+"""
 Returns:
     A sequence of twitter.DirectMessage instances
 """

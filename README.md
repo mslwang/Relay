@@ -10,7 +10,7 @@
 
 * Don't forget to install python-twitter instead of twitter for the flask dependencies
 
-**Important note**: After installing python-twitter, locate the api.py file (it should tell you where this is being downloaded toas you install python-twitter). Then find the GetDirectMessage function and locate the following code snippet:
+**Important note**: After installing python-twitter, locate the api.py file (it should tell you where this is being downloaded to as you install python-twitter). Then find the GetDirectMessage function and locate the following code snippet:
 
 ``` python
 """
